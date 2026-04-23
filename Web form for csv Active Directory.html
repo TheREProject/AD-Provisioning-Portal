@@ -1,0 +1,265 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>User Onboarding Tool</title>
+</head>
+<body>
+
+<h2>Create Users</h2>
+
+<form id="userForm" onsubmit="addOrUpdateUser(event)">
+  First Name: <input type="text" id="firstName" required><br><br>
+  Last Name: <input type="text" id="lastName" required><br><br>
+  Username: <input type="text" id="username" required><br><br>
+
+  Department:
+  <select id="department" required></select><br><br>
+
+  Security Groups:
+  <select id="securityGroups" multiple size="6"></select><br><br>
+
+  <button type="button" onclick="setGeneratedPassword()">Generate Password</button>
+  <p id="passwordMessage" style="color: green;"></p>
+
+  <button type="submit" id="submitBtn" disabled>Add / Update User</button>
+</form>
+
+<h3>Users to be Created</h3>
+
+<table border="1" id="userTable">
+  <thead>
+    <tr>
+      <th>First Name</th>
+      <th>Last Name</th>
+      <th>Username</th>
+      <th>Department</th>
+      <th>Security Groups</th>
+      <th>Password</th>
+      <th>Actions</th>
+    </tr>
+  </thead>
+  <tbody></tbody>
+</table>
+
+<br>
+<button onclick="downloadCSV()">Download CSV</button>
+
+<script>
+let users = [];
+let editIndex = null;
+let currentPassword = "";
+
+// Store AD data globally
+let adDepartments = [];
+let adGroups = [];
+
+// Load JSON from file
+fetch("ad-data.json")
+  .then(response => response.json())
+  .then(data => {
+	console.log(data);
+    adDepartments = data.departments;
+    adGroups = data.groups;
+
+    populateDepartments(adDepartments);
+    populateGroups(adGroups);
+  });
+
+// Populate Departments (Name shown, DN stored)
+function populateDepartments(departments) {
+  let dropdown = document.getElementById("department");
+
+  dropdown.innerHTML = '<option value="">--Select Department--</option>';
+
+  departments.forEach(dept => {
+    let option = document.createElement("option");
+    option.value = dept.dn;
+    option.text = dept.name;
+    dropdown.appendChild(option);
+  });
+}
+
+// Populate Groups (Name shown, DN stored)
+function populateGroups(groups) {
+  let dropdown = document.getElementById("securityGroups");
+
+  dropdown.innerHTML = "";
+
+  groups.forEach(group => {
+    let option = document.createElement("option");
+    option.value = group.dn;
+    option.text = group.name;
+    dropdown.appendChild(option);
+  });
+}
+
+// Password generator
+function generatePassword(length = 12) {
+  const upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
+  const lower = "abcdefghijklmnopqrstuvwxyz";
+  const numbers = "0123456789";
+  const symbols = "!@#$%^&*";
+
+  let password =
+    upper[Math.floor(Math.random() * upper.length)] +
+    lower[Math.floor(Math.random() * lower.length)] +
+    numbers[Math.floor(Math.random() * numbers.length)] +
+    symbols[Math.floor(Math.random() * symbols.length)];
+
+  const all = upper + lower + numbers + symbols;
+
+  for (let i = 4; i < length; i++) {
+    password += all[Math.floor(Math.random() * all.length)];
+  }
+
+  return password.split("").sort(() => Math.random() - 0.5).join("");
+}
+
+// Generate password
+function setGeneratedPassword() {
+  currentPassword = generatePassword();
+
+  document.getElementById("passwordMessage").innerText =
+    "✅ Password generated. You can now add the user.";
+
+  document.getElementById("submitBtn").disabled = false;
+}
+
+// Add or update user
+function addOrUpdateUser(event) {
+  event.preventDefault();
+
+  if (!currentPassword) {
+    alert("Please generate a password.");
+    return;
+  }
+
+  let selectedGroupOptions = Array.from(
+    document.getElementById("securityGroups").selectedOptions
+  );
+
+  if (selectedGroupOptions.length === 0) {
+    alert("Select at least one group.");
+    return;
+  }
+
+  let user = {
+    firstName: document.getElementById("firstName").value,
+    lastName: document.getElementById("lastName").value,
+    username: document.getElementById("username").value,
+
+    departmentDN: document.getElementById("department").value,
+    departmentName: document.getElementById("department").selectedOptions[0].text,
+
+    securityGroupsDN: selectedGroupOptions.map(o => o.value),
+    securityGroupsName: selectedGroupOptions.map(o => o.text),
+
+    password: currentPassword
+  };
+
+  let exists = users.some((u, i) =>
+    u.username === user.username && i !== editIndex
+  );
+
+  if (exists) {
+    alert("Username already exists!");
+    return;
+  }
+
+  if (editIndex === null) {
+    users.push(user);
+  } else {
+    users[editIndex] = user;
+    editIndex = null;
+  }
+
+  renderTable();
+
+  document.getElementById("userForm").reset();
+  currentPassword = "";
+  document.getElementById("passwordMessage").innerText = "";
+  document.getElementById("submitBtn").disabled = true;
+
+  Array.from(document.getElementById("securityGroups").options)
+    .forEach(o => o.selected = false);
+}
+
+// Render table
+function renderTable() {
+  let tbody = document.querySelector("#userTable tbody");
+  tbody.innerHTML = "";
+
+  users.forEach((user, index) => {
+    let row = tbody.insertRow();
+
+    row.insertCell(0).innerText = user.firstName;
+    row.insertCell(1).innerText = user.lastName;
+    row.insertCell(2).innerText = user.username;
+    row.insertCell(3).innerText = user.departmentName;
+    row.insertCell(4).innerText = user.securityGroupsName.join(", ");
+    row.insertCell(5).innerText = user.password;
+
+    let actions = row.insertCell(6);
+    actions.innerHTML = `
+      <button onclick="editUser(${index})">Edit</button>
+      <button onclick="removeUser(${index})">Remove</button>
+    `;
+  });
+}
+
+// Edit user
+function editUser(index) {
+  let user = users[index];
+
+  document.getElementById("firstName").value = user.firstName;
+  document.getElementById("lastName").value = user.lastName;
+  document.getElementById("username").value = user.username;
+  document.getElementById("department").value = user.departmentDN;
+
+  let groupDropdown = document.getElementById("securityGroups");
+
+  Array.from(groupDropdown.options).forEach(option => {
+    option.selected = user.securityGroupsDN.includes(option.value);
+  });
+
+  editIndex = index;
+  currentPassword = user.password;
+
+  document.getElementById("passwordMessage").innerText =
+    "Editing user. Password retained.";
+
+  document.getElementById("submitBtn").disabled = false;
+}
+
+// Remove user
+function removeUser(index) {
+  if (confirm("Remove this user?")) {
+    users.splice(index, 1);
+    renderTable();
+  }
+}
+
+// CSV Export
+function downloadCSV() {
+  if (users.length === 0) {
+    alert("No users to export.");
+    return;
+  }
+
+  let headers = "FirstName,LastName,Username,DepartmentDN,SecurityGroupsDN,Password\n";
+
+  let rows = users.map(u =>
+    `${u.firstName},${u.lastName},${u.username},${u.departmentDN},"${u.securityGroupsDN.join("|")}",${u.password}`
+  ).join("\n");
+
+  let blob = new Blob([headers + rows], { type: "text/csv" });
+  let link = document.createElement("a");
+
+  link.href = URL.createObjectURL(blob);
+  link.download = "users.csv";
+  link.click();
+}
+</script>
+
+</body>
+</html>
