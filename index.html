@@ -239,6 +239,30 @@ function removeUser(index) {
   }
 }
 
+
+
+function escapeCSV(value) {
+    if (value === null || value === undefined) {
+        return "";
+    }
+
+    value = value.toString();
+
+    // If field contains commas, quotes, or newlines
+    if (value.includes(",") || value.includes('"') || value.includes("\n")) {
+
+        // Escape internal quotes
+        value = value.replace(/"/g, '""');
+
+        // Wrap field in quotes
+        value = `"${value}"`;
+    }
+
+    return value;
+}
+
+
+	
 // CSV Export
 function downloadCSV() {
   if (users.length === 0) {
