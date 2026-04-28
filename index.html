@@ -1,289 +1,503 @@
+# Active Directory User Provisioning Web Form (Updated)
+
+```html
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-  <title>User Onboarding Tool</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AD User Provisioning Tool</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            margin-top: 0;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .primary-btn {
+            background-color: #0078d4;
+            color: white;
+        }
+
+        .danger-btn {
+            background-color: #c62828;
+            color: white;
+        }
+
+        .secondary-btn {
+            background-color: #666;
+            color: white;
+        }
+
+        .button-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th,
+        td {
+            border: 1px solid #ccc;
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #0078d4;
+            color: white;
+        }
+
+        .status {
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        .success {
+            color: green;
+        }
+
+        .error {
+            color: red;
+        }
+
+        .group-container {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .group-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .group-checkbox input {
+            width: auto;
+        }
+    </style>
 </head>
 <body>
 
-<h2>Create Users</h2>
+<div class="container">
 
-<form id="userForm" onsubmit="addOrUpdateUser(event)">
-  First Name: <input type="text" id="firstName" required><br><br>
-  Last Name: <input type="text" id="lastName" required><br><br>
-  Username: <input type="text" id="username" required><br><br>
+    <h1>AD User Provisioning Tool</h1>
 
-  Department:
-  <select id="department" required></select><br><br>
+    <div class="form-grid">
 
-  Security Groups:
-  <select id="securityGroups" multiple size="6"></select><br><br>
+        <div>
+            <label>First Name</label>
+            <input type="text" id="firstName">
+        </div>
 
-  <button type="button" onclick="setGeneratedPassword()">Generate Password</button>
-  <p id="passwordMessage" style="color: green;"></p>
+        <div>
+            <label>Last Name</label>
+            <input type="text" id="lastName">
+        </div>
 
-  <button type="submit" id="submitBtn" disabled>Add / Update User</button>
-</form>
+        <div>
+            <label>Username</label>
+            <input type="text" id="username">
+        </div>
 
-<h3>Users to be Created</h3>
+        <div>
+            <label>Department</label>
+            <select id="departmentSelect">
+                <option value="">Loading Departments...</option>
+            </select>
+        </div>
 
-<table border="1" id="userTable">
-  <thead>
-    <tr>
-      <th>First Name</th>
-      <th>Last Name</th>
-      <th>Username</th>
-      <th>Department</th>
-      <th>Security Groups</th>
-      <th>Password</th>
-      <th>Actions</th>
-    </tr>
-  </thead>
-  <tbody></tbody>
-</table>
+        <div>
+            <label>Generate Temporary Password</label>
+            <button class="secondary-btn" onclick="generatePassword()">
+                Generate Password
+            </button>
+            <div id="passwordStatus" class="status"></div>
+        </div>
 
-<br>
-<button onclick="downloadCSV()">Download CSV</button>
+    </div>
+
+    <div>
+        <label>Security Groups</label>
+        <div id="groupContainer" class="group-container"></div>
+    </div>
+
+    <div class="button-row">
+        <button class="primary-btn" onclick="addUser()">Add User</button>
+        <button class="secondary-btn" onclick="exportCSV()">Export CSV</button>
+    </div>
+
+    <table id="userTable">
+        <thead>
+            <tr>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Username</th>
+                <th>Department DN</th>
+                <th>Security Groups DN</th>
+                <th>Password</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+</div>
 
 <script>
-let users = [];
-let editIndex = null;
-let currentPassword = "";
 
-// Store AD data globally
-let adDepartments = [];
-let adGroups = [];
+    let users = [];
+    let currentPassword = "";
+    let editingIndex = -1;
 
-// Load JSON from file
-fetch("ad-data.json")
-  .then(response => response.json())
-  .then(data => {
-	console.log(data);
-    adDepartments = data.departments;
-    adGroups = data.groups;
+    // ==============================
+    // LOAD JSON DATA
+    // ==============================
+    async function loadData() {
 
-    populateDepartments(adDepartments);
-    populateGroups(adGroups);
-  });
+        try {
+            const response = await fetch('ad-data.json');
+            const data = await response.json();
 
-// Populate Departments (Name shown, DN stored)
-function populateDepartments(departments) {
-  let dropdown = document.getElementById("department");
+            populateDepartments(data.departments || []);
+            populateGroups(data.groups || []);
 
-  dropdown.innerHTML = '<option value="">--Select Department--</option>';
-
-  departments.forEach(dept => {
-    let option = document.createElement("option");
-    option.value = dept.dn;
-    option.text = dept.name;
-    dropdown.appendChild(option);
-  });
-}
-
-// Populate Groups (Name shown, DN stored)
-function populateGroups(groups) {
-  let dropdown = document.getElementById("securityGroups");
-
-  dropdown.innerHTML = "";
-
-  groups.forEach(group => {
-    let option = document.createElement("option");
-    option.value = group.dn;
-    option.text = group.name;
-    dropdown.appendChild(option);
-  });
-}
-
-// Password generator
-function generatePassword(length = 12) {
-  const upper = "ABCDEFGHIJKLMNOPQRSTUVWXYZ";
-  const lower = "abcdefghijklmnopqrstuvwxyz";
-  const numbers = "0123456789";
-  const symbols = "!@#$%^&*";
-
-  let password =
-    upper[Math.floor(Math.random() * upper.length)] +
-    lower[Math.floor(Math.random() * lower.length)] +
-    numbers[Math.floor(Math.random() * numbers.length)] +
-    symbols[Math.floor(Math.random() * symbols.length)];
-
-  const all = upper + lower + numbers + symbols;
-
-  for (let i = 4; i < length; i++) {
-    password += all[Math.floor(Math.random() * all.length)];
-  }
-
-  return password.split("").sort(() => Math.random() - 0.5).join("");
-}
-
-// Generate password
-function setGeneratedPassword() {
-  currentPassword = generatePassword();
-
-  document.getElementById("passwordMessage").innerText =
-    "✅ Password generated. You can now add the user.";
-
-  document.getElementById("submitBtn").disabled = false;
-}
-
-// Add or update user
-function addOrUpdateUser(event) {
-  event.preventDefault();
-
-  if (!currentPassword) {
-    alert("Please generate a password.");
-    return;
-  }
-
-  let selectedGroupOptions = Array.from(
-    document.getElementById("securityGroups").selectedOptions
-  );
-
-  if (selectedGroupOptions.length === 0) {
-    alert("Select at least one group.");
-    return;
-  }
-
-  let user = {
-    firstName: document.getElementById("firstName").value,
-    lastName: document.getElementById("lastName").value,
-    username: document.getElementById("username").value,
-
-    departmentDN: document.getElementById("department").value,
-    departmentName: document.getElementById("department").selectedOptions[0].text,
-
-    securityGroupsDN: selectedGroupOptions.map(o => o.value),
-    securityGroupsName: selectedGroupOptions.map(o => o.text),
-
-    password: currentPassword
-  };
-
-  let exists = users.some((u, i) =>
-    u.username === user.username && i !== editIndex
-  );
-
-  if (exists) {
-    alert("Username already exists!");
-    return;
-  }
-
-  if (editIndex === null) {
-    users.push(user);
-  } else {
-    users[editIndex] = user;
-    editIndex = null;
-  }
-
-  renderTable();
-
-  document.getElementById("userForm").reset();
-  currentPassword = "";
-  document.getElementById("passwordMessage").innerText = "";
-  document.getElementById("submitBtn").disabled = true;
-
-  Array.from(document.getElementById("securityGroups").options)
-    .forEach(o => o.selected = false);
-}
-
-// Render table
-function renderTable() {
-  let tbody = document.querySelector("#userTable tbody");
-  tbody.innerHTML = "";
-
-  users.forEach((user, index) => {
-    let row = tbody.insertRow();
-
-    row.insertCell(0).innerText = user.firstName;
-    row.insertCell(1).innerText = user.lastName;
-    row.insertCell(2).innerText = user.username;
-    row.insertCell(3).innerText = user.departmentName;
-    row.insertCell(4).innerText = user.securityGroupsName.join(", ");
-    row.insertCell(5).innerText = user.password;
-
-    let actions = row.insertCell(6);
-    actions.innerHTML = `
-      <button onclick="editUser(${index})">Edit</button>
-      <button onclick="removeUser(${index})">Remove</button>
-    `;
-  });
-}
-
-// Edit user
-function editUser(index) {
-  let user = users[index];
-
-  document.getElementById("firstName").value = user.firstName;
-  document.getElementById("lastName").value = user.lastName;
-  document.getElementById("username").value = user.username;
-  document.getElementById("department").value = user.departmentDN;
-
-  let groupDropdown = document.getElementById("securityGroups");
-
-  Array.from(groupDropdown.options).forEach(option => {
-    option.selected = user.securityGroupsDN.includes(option.value);
-  });
-
-  editIndex = index;
-  currentPassword = user.password;
-
-  document.getElementById("passwordMessage").innerText =
-    "Editing user. Password retained.";
-
-  document.getElementById("submitBtn").disabled = false;
-}
-
-// Remove user
-function removeUser(index) {
-  if (confirm("Remove this user?")) {
-    users.splice(index, 1);
-    renderTable();
-  }
-}
-
-
-
-function escapeCSV(value) {
-    if (value === null || value === undefined) {
-        return "";
+        } catch (error) {
+            console.error('Failed to load JSON:', error);
+        }
     }
 
-    value = value.toString();
+    // ==============================
+    // POPULATE DEPARTMENTS
+    // ==============================
+    function populateDepartments(departments) {
 
-    // If field contains commas, quotes, or newlines
-    if (value.includes(",") || value.includes('"') || value.includes("\n")) {
+        const select = document.getElementById('departmentSelect');
+        select.innerHTML = '<option value="">Select Department</option>';
 
-        // Escape internal quotes
-        value = value.replace(/"/g, '""');
-
-        // Wrap field in quotes
-        value = `"${value}"`;
+        departments.forEach(dept => {
+            const option = document.createElement('option');
+            option.value = dept.dn;
+            option.textContent = dept.name;
+            select.appendChild(option);
+        });
     }
 
-    return value;
-}
+    // ==============================
+    // POPULATE GROUPS
+    // ==============================
+    function populateGroups(groups) {
 
+        const container = document.getElementById('groupContainer');
+        container.innerHTML = '';
 
-	
-// CSV Export
-function downloadCSV() {
-  if (users.length === 0) {
-    alert("No users to export.");
-    return;
-  }
+        groups.forEach(group => {
 
-  let headers = "FirstName,LastName,Username,DepartmentDN,SecurityGroupsDN,Password\n";
+            const wrapper = document.createElement('div');
+            wrapper.className = 'group-checkbox';
 
-  let rows = users.map(u =>
-    `${u.firstName},${u.lastName},${u.username},${u.departmentDN},"${u.securityGroupsDN.join("|")}",${u.password}`
-  ).join("\n");
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.value = group.dn;
+            checkbox.id = group.name;
 
-  let blob = new Blob([headers + rows], { type: "text/csv" });
-  let link = document.createElement("a");
+            const label = document.createElement('label');
+            label.htmlFor = group.name;
+            label.textContent = group.name;
 
-  link.href = URL.createObjectURL(blob);
-  link.download = "users.csv";
-  link.click();
-}
+            wrapper.appendChild(checkbox);
+            wrapper.appendChild(label);
+
+            container.appendChild(wrapper);
+        });
+    }
+
+    // ==============================
+    // PASSWORD GENERATION
+    // ==============================
+    function generatePassword(length = 14) {
+
+        const charset = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%^&*';
+
+        let password = '';
+
+        for (let i = 0; i < length; i++) {
+            password += charset.charAt(Math.floor(Math.random() * charset.length));
+        }
+
+        currentPassword = password;
+
+        document.getElementById('passwordStatus').innerHTML =
+            `<span class="success">Temporary password generated.</span>`;
+    }
+
+    // ==============================
+    // GET SELECTED GROUPS
+    // ==============================
+    function getSelectedGroups() {
+
+        const checkboxes = document.querySelectorAll('#groupContainer input[type="checkbox"]:checked');
+
+        return Array.from(checkboxes)
+            .map(cb => cb.value)
+            .join('|');
+    }
+
+    // ==============================
+    // ADD OR UPDATE USER
+    // ==============================
+    function addUser() {
+
+        const firstName = document.getElementById('firstName').value.trim();
+        const lastName = document.getElementById('lastName').value.trim();
+        const username = document.getElementById('username').value.trim();
+        const departmentDN = document.getElementById('departmentSelect').value;
+        const securityGroupsDN = getSelectedGroups();
+
+        if (!firstName || !lastName || !username || !departmentDN) {
+            alert('Please complete all required fields.');
+            return;
+        }
+
+        if (!currentPassword) {
+            generatePassword();
+        }
+
+        const user = {
+            firstName,
+            lastName,
+            username,
+            departmentDN,
+            securityGroupsDN,
+            password: currentPassword
+        };
+
+        if (editingIndex >= 0) {
+            users[editingIndex] = user;
+            editingIndex = -1;
+        } else {
+            users.push(user);
+        }
+
+        renderTable();
+        clearForm();
+    }
+
+    // ==============================
+    // RENDER TABLE
+    // ==============================
+    function renderTable() {
+
+        const tbody = document.querySelector('#userTable tbody');
+        tbody.innerHTML = '';
+
+        users.forEach((user, index) => {
+
+            const row = document.createElement('tr');
+
+            row.innerHTML = `
+                <td>${user.firstName}</td>
+                <td>${user.lastName}</td>
+                <td>${user.username}</td>
+                <td>${user.departmentDN}</td>
+                <td>${user.securityGroupsDN}</td>
+                <td>${user.password}</td>
+                <td>
+                    <button class="secondary-btn" onclick="editUser(${index})">Edit</button>
+                    <button class="danger-btn" onclick="removeUser(${index})">Remove</button>
+                </td>
+            `;
+
+            tbody.appendChild(row);
+        });
+    }
+
+    // ==============================
+    // EDIT USER
+    // ==============================
+    function editUser(index) {
+
+        const user = users[index];
+
+        document.getElementById('firstName').value = user.firstName;
+        document.getElementById('lastName').value = user.lastName;
+        document.getElementById('username').value = user.username;
+        document.getElementById('departmentSelect').value = user.departmentDN;
+
+        currentPassword = user.password;
+
+        document.querySelectorAll('#groupContainer input[type="checkbox"]').forEach(cb => {
+            cb.checked = false;
+        });
+
+        const selectedGroups = user.securityGroupsDN.split('|');
+
+        selectedGroups.forEach(groupDN => {
+
+            const checkbox = Array.from(document.querySelectorAll('#groupContainer input[type="checkbox"]'))
+                .find(cb => cb.value === groupDN);
+
+            if (checkbox) {
+                checkbox.checked = true;
+            }
+        });
+
+        editingIndex = index;
+    }
+
+    // ==============================
+    // REMOVE USER
+    // ==============================
+    function removeUser(index) {
+
+        users.splice(index, 1);
+        renderTable();
+    }
+
+    // ==============================
+    // CLEAR FORM
+    // ==============================
+    function clearForm() {
+
+        document.getElementById('firstName').value = '';
+        document.getElementById('lastName').value = '';
+        document.getElementById('username').value = '';
+        document.getElementById('departmentSelect').selectedIndex = 0;
+
+        document.querySelectorAll('#groupContainer input[type="checkbox"]').forEach(cb => {
+            cb.checked = false;
+        });
+
+        currentPassword = '';
+
+        document.getElementById('passwordStatus').innerHTML = '';
+    }
+
+    // ==============================
+    // CSV ESCAPING
+    // ==============================
+    function escapeCSV(value) {
+
+        if (value === null || value === undefined) {
+            return '';
+        }
+
+        value = value.toString();
+
+        if (value.includes(',') || value.includes('"') || value.includes('\n')) {
+
+            value = value.replace(/"/g, '""');
+            value = `"${value}"`;
+        }
+
+        return value;
+    }
+
+    // ==============================
+    // EXPORT CSV
+    // ==============================
+    function exportCSV() {
+
+        if (users.length === 0) {
+            alert('No users to export.');
+            return;
+        }
+
+        const headers = [
+            'FirstName',
+            'LastName',
+            'Username',
+            'DepartmentDN',
+            'SecurityGroupsDN',
+            'Password'
+        ];
+
+        const csvRows = users.map(user =>
+            [
+                escapeCSV(user.firstName),
+                escapeCSV(user.lastName),
+                escapeCSV(user.username),
+                escapeCSV(user.departmentDN),
+                escapeCSV(user.securityGroupsDN),
+                escapeCSV(user.password)
+            ].join(',')
+        );
+
+        const csvContent = [
+            headers.join(','),
+            ...csvRows
+        ].join('\n');
+
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'users.csv';
+
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
+    // ==============================
+    // INITIALIZE
+    // ==============================
+    loadData();
+
 </script>
 
 </body>
 </html>
+```
