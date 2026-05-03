@@ -1,34 +1,4 @@
 {
-  "departments": [
-    {
-      "dn": "OU=Space Cops,DC=specops,DC=com",
-      "name": "Justice League"
-    },
-    {
-      "dn": "OU=Justice League,OU=Space Cops,DC=specops,DC=com",
-      "name": "HR"
-    },
-    {
-      "dn": "OU=Justice League,OU=Space Cops,DC=specops,DC=com",
-      "name": "IT"
-    },
-    {
-      "dn": "OU=Justice League,OU=Space Cops,DC=specops,DC=com",
-      "name": "Sales"
-    },
-    {
-      "dn": "OU=Justice League,OU=Space Cops,DC=specops,DC=com",
-      "name": "Engineering"
-    },
-    {
-      "dn": "OU=Justice League,OU=Space Cops,DC=specops,DC=com",
-      "name": "Legal"
-    },
-    {
-      "dn": "OU=Justice League,OU=Space Cops,DC=specops,DC=com",
-      "name": "Heroes"
-    }
-  ],
   "groups": [
     {
       "dn": "CN=Justice League_HR_Users,OU=HR,OU=Justice League,OU=Space Cops,DC=specops,DC=com",
@@ -129,6 +99,36 @@
     {
       "dn": "CN=The Seven Soldiers of Victory,OU=Heroes,OU=Justice League,OU=Space Cops,DC=specops,DC=com",
       "name": "The Seven Soldiers of Victory"
+    }
+  ],
+    "departments": [
+    {
+      "dn": "OU=Space Cops,DC=specops,DC=com",
+      "name": "Justice League"
+    },
+    {
+      "dn": "OU=Justice League,OU=Space Cops,DC=specops,DC=com",
+      "name": "HR"
+    },
+    {
+      "dn": "OU=Justice League,OU=Space Cops,DC=specops,DC=com",
+      "name": "IT"
+    },
+    {
+      "dn": "OU=Justice League,OU=Space Cops,DC=specops,DC=com",
+      "name": "Sales"
+    },
+    {
+      "dn": "OU=Justice League,OU=Space Cops,DC=specops,DC=com",
+      "name": "Engineering"
+    },
+    {
+      "dn": "OU=Justice League,OU=Space Cops,DC=specops,DC=com",
+      "name": "Legal"
+    },
+    {
+      "dn": "OU=Justice League,OU=Space Cops,DC=specops,DC=com",
+      "name": "Heroes"
     }
   ]
 }
