@@ -1,5 +1,5 @@
 {
-  "SecurityGroups": [
+  "groups": [
     {
       "Name": "Justice League_HR_Users",
       "DistinguishedName": "CN=Justice League_HR_Users,OU=HR,OU=Justice League,OU=Space Cops,DC=specops,DC=com"
@@ -101,7 +101,7 @@
       "DistinguishedName": "CN=The Seven Soldiers of Victory,OU=Heroes,OU=Justice League,OU=Space Cops,DC=specops,DC=com"
     }
   ],
-  "DepartmentOUs": [
+  "departments": [
     {
       "Name": "Justice League",
       "DistinguishedName": "OU=Justice League,OU=Space Cops,DC=specops,DC=com"
