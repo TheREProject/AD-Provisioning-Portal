@@ -1,134 +1,134 @@
 {
   "groups": [
     {
-      "Name": "Justice League_HR_Users",
-      "DistinguishedName": "CN=Justice League_HR_Users,OU=HR,OU=Justice League,OU=Space Cops,DC=specops,DC=com"
+      "name": "Justice League_HR_Users",
+      "dn": "CN=Justice League_HR_Users,OU=HR,OU=Justice League,OU=Space Cops,DC=specops,DC=com"
     },
     {
-      "Name": "Justice League_HR_Managers",
-      "DistinguishedName": "CN=Justice League_HR_Managers,OU=HR,OU=Justice League,OU=Space Cops,DC=specops,DC=com"
+      "name": "Justice League_HR_Managers",
+      "dn": "CN=Justice League_HR_Managers,OU=HR,OU=Justice League,OU=Space Cops,DC=specops,DC=com"
     },
     {
-      "Name": "Justice League_HR_ReadOnly",
-      "DistinguishedName": "CN=Justice League_HR_ReadOnly,OU=HR,OU=Justice League,OU=Space Cops,DC=specops,DC=com"
+      "name": "Justice League_HR_ReadOnly",
+      "dn": "CN=Justice League_HR_ReadOnly,OU=HR,OU=Justice League,OU=Space Cops,DC=specops,DC=com"
     },
     {
-      "Name": "Justice League_IT_Users",
-      "DistinguishedName": "CN=Justice League_IT_Users,OU=IT,OU=Justice League,OU=Space Cops,DC=specops,DC=com"
+      "name": "Justice League_IT_Users",
+      "dn": "CN=Justice League_IT_Users,OU=IT,OU=Justice League,OU=Space Cops,DC=specops,DC=com"
     },
     {
-      "Name": "Justice League_IT_Managers",
-      "DistinguishedName": "CN=Justice League_IT_Managers,OU=IT,OU=Justice League,OU=Space Cops,DC=specops,DC=com"
+      "name": "Justice League_IT_Managers",
+      "dn": "CN=Justice League_IT_Managers,OU=IT,OU=Justice League,OU=Space Cops,DC=specops,DC=com"
     },
     {
-      "Name": "Justice League_IT_ReadOnly",
-      "DistinguishedName": "CN=Justice League_IT_ReadOnly,OU=IT,OU=Justice League,OU=Space Cops,DC=specops,DC=com"
+      "name": "Justice League_IT_ReadOnly",
+      "dn": "CN=Justice League_IT_ReadOnly,OU=IT,OU=Justice League,OU=Space Cops,DC=specops,DC=com"
     },
     {
-      "Name": "Justice League_Sales_Users",
-      "DistinguishedName": "CN=Justice League_Sales_Users,OU=Sales,OU=Justice League,OU=Space Cops,DC=specops,DC=com"
+      "name": "Justice League_Sales_Users",
+      "dn": "CN=Justice League_Sales_Users,OU=Sales,OU=Justice League,OU=Space Cops,DC=specops,DC=com"
     },
     {
-      "Name": "Justice League_Sales_Managers",
-      "DistinguishedName": "CN=Justice League_Sales_Managers,OU=Sales,OU=Justice League,OU=Space Cops,DC=specops,DC=com"
+      "name": "Justice League_Sales_Managers",
+      "dn": "CN=Justice League_Sales_Managers,OU=Sales,OU=Justice League,OU=Space Cops,DC=specops,DC=com"
     },
     {
-      "Name": "Justice League_Sales_ReadOnly",
-      "DistinguishedName": "CN=Justice League_Sales_ReadOnly,OU=Sales,OU=Justice League,OU=Space Cops,DC=specops,DC=com"
+      "name": "Justice League_Sales_ReadOnly",
+      "dn": "CN=Justice League_Sales_ReadOnly,OU=Sales,OU=Justice League,OU=Space Cops,DC=specops,DC=com"
     },
     {
       "Name": "Justice League_Engineering_Users",
-      "DistinguishedName": "CN=Justice League_Engineering_Users,OU=Engineering,OU=Justice League,OU=Space Cops,DC=specops,DC=com"
+      "dn": "CN=Justice League_Engineering_Users,OU=Engineering,OU=Justice League,OU=Space Cops,DC=specops,DC=com"
     },
     {
-      "Name": "Justice League_Engineering_Managers",
-      "DistinguishedName": "CN=Justice League_Engineering_Managers,OU=Engineering,OU=Justice League,OU=Space Cops,DC=specops,DC=com"
+      "name": "Justice League_Engineering_Managers",
+      "dn": "CN=Justice League_Engineering_Managers,OU=Engineering,OU=Justice League,OU=Space Cops,DC=specops,DC=com"
     },
     {
-      "Name": "Justice League_Engineering_ReadOnly",
-      "DistinguishedName": "CN=Justice League_Engineering_ReadOnly,OU=Engineering,OU=Justice League,OU=Space Cops,DC=specops,DC=com"
+      "name": "Justice League_Engineering_ReadOnly",
+      "dn": "CN=Justice League_Engineering_ReadOnly,OU=Engineering,OU=Justice League,OU=Space Cops,DC=specops,DC=com"
     },
     {
-      "Name": "Justice League_Legal_Users",
-      "DistinguishedName": "CN=Justice League_Legal_Users,OU=Legal,OU=Justice League,OU=Space Cops,DC=specops,DC=com"
+      "name": "Justice League_Legal_Users",
+      "dn": "CN=Justice League_Legal_Users,OU=Legal,OU=Justice League,OU=Space Cops,DC=specops,DC=com"
     },
     {
-      "Name": "Justice League_Legal_Managers",
-      "DistinguishedName": "CN=Justice League_Legal_Managers,OU=Legal,OU=Justice League,OU=Space Cops,DC=specops,DC=com"
+      "name": "Justice League_Legal_Managers",
+      "dn": "CN=Justice League_Legal_Managers,OU=Legal,OU=Justice League,OU=Space Cops,DC=specops,DC=com"
     },
     {
-      "Name": "Justice League_Legal_ReadOnly",
-      "DistinguishedName": "CN=Justice League_Legal_ReadOnly,OU=Legal,OU=Justice League,OU=Space Cops,DC=specops,DC=com"
+      "name": "Justice League_Legal_ReadOnly",
+      "dn": "CN=Justice League_Legal_ReadOnly,OU=Legal,OU=Justice League,OU=Space Cops,DC=specops,DC=com"
     },
     {
-      "Name": "Global Admins",
-      "DistinguishedName": "CN=Global Admins,OU=Justice League,OU=Space Cops,DC=specops,DC=com"
+      "name": "Global Admins",
+      "dn": "CN=Global Admins,OU=Justice League,OU=Space Cops,DC=specops,DC=com"
     },
     {
-      "Name": "Detriot",
-      "DistinguishedName": "CN=Detriot,OU=Heroes,OU=Justice League,OU=Space Cops,DC=specops,DC=com"
+      "name": "Detriot",
+      "dn": "CN=Detriot,OU=Heroes,OU=Justice League,OU=Space Cops,DC=specops,DC=com"
     },
     {
-      "Name": "Ditko",
-      "DistinguishedName": "CN=Ditko,OU=Heroes,OU=Justice League,OU=Space Cops,DC=specops,DC=com"
+      "name": "Ditko",
+      "dn": "CN=Ditko,OU=Heroes,OU=Justice League,OU=Space Cops,DC=specops,DC=com"
     },
     {
-      "Name": "Haney",
-      "DistinguishedName": "CN=Haney,OU=Heroes,OU=Justice League,OU=Space Cops,DC=specops,DC=com"
+      "name": "Haney",
+      "dn": "CN=Haney,OU=Heroes,OU=Justice League,OU=Space Cops,DC=specops,DC=com"
     },
     {
-      "Name": "International",
-      "DistinguishedName": "CN=International,OU=Heroes,OU=Justice League,OU=Space Cops,DC=specops,DC=com"
+      "name": "International",
+      "dn": "CN=International,OU=Heroes,OU=Justice League,OU=Space Cops,DC=specops,DC=com"
     },
     {
-      "Name": "Justice Society of America",
-      "DistinguishedName": "CN=Justice Society of America,OU=Heroes,OU=Justice League,OU=Space Cops,DC=specops,DC=com"
+      "name": "Justice Society of America",
+      "dn": "CN=Justice Society of America,OU=Heroes,OU=Justice League,OU=Space Cops,DC=specops,DC=com"
     },
     {
-      "Name": "Satellite",
+      "name": "Satellite",
       "DistinguishedName": "CN=Satellite,OU=Heroes,OU=Justice League,OU=Space Cops,DC=specops,DC=com"
     },
     {
-      "Name": "Simonson",
+      "name": "Simonson",
       "DistinguishedName": "CN=Simonson,OU=Heroes,OU=Justice League,OU=Space Cops,DC=specops,DC=com"
     },
     {
-      "Name": "The Founding Seven",
+      "name": "The Founding Seven",
       "DistinguishedName": "CN=The Founding Seven,OU=Heroes,OU=Justice League,OU=Space Cops,DC=specops,DC=com"
     },
     {
-      "Name": "The Seven Soldiers of Victory",
+      "name": "The Seven Soldiers of Victory",
       "DistinguishedName": "CN=The Seven Soldiers of Victory,OU=Heroes,OU=Justice League,OU=Space Cops,DC=specops,DC=com"
     }
   ],
   "departments": [
     {
-      "Name": "Justice League",
-      "DistinguishedName": "OU=Justice League,OU=Space Cops,DC=specops,DC=com"
+      "name": "Justice League",
+      "dn": "OU=Justice League,OU=Space Cops,DC=specops,DC=com"
     },
     {
-      "Name": "HR",
-      "DistinguishedName": "OU=HR,OU=Justice League,OU=Space Cops,DC=specops,DC=com"
+      "name": "HR",
+      "dn": "OU=HR,OU=Justice League,OU=Space Cops,DC=specops,DC=com"
     },
     {
-      "Name": "IT",
-      "DistinguishedName": "OU=IT,OU=Justice League,OU=Space Cops,DC=specops,DC=com"
+      "name": "IT",
+      "dn": "OU=IT,OU=Justice League,OU=Space Cops,DC=specops,DC=com"
     },
     {
-      "Name": "Sales",
-      "DistinguishedName": "OU=Sales,OU=Justice League,OU=Space Cops,DC=specops,DC=com"
+      "name": "Sales",
+      "dn": "OU=Sales,OU=Justice League,OU=Space Cops,DC=specops,DC=com"
     },
     {
-      "Name": "Engineering",
-      "DistinguishedName": "OU=Engineering,OU=Justice League,OU=Space Cops,DC=specops,DC=com"
+      "name": "Engineering",
+      "dn": "OU=Engineering,OU=Justice League,OU=Space Cops,DC=specops,DC=com"
     },
     {
-      "Name": "Legal",
-      "DistinguishedName": "OU=Legal,OU=Justice League,OU=Space Cops,DC=specops,DC=com"
+      "name": "Legal",
+      "dn": "OU=Legal,OU=Justice League,OU=Space Cops,DC=specops,DC=com"
     },
     {
-      "Name": "Heroes",
-      "DistinguishedName": "OU=Heroes,OU=Justice League,OU=Space Cops,DC=specops,DC=com"
+      "name": "Heroes",
+      "dn": "OU=Heroes,OU=Justice League,OU=Space Cops,DC=specops,DC=com"
     }
   ]
 }
