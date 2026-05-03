@@ -1,0 +1,32 @@
+{
+  "groups": {
+    "dn": "CN=Global Admins,OU=Justice League,OU=Space Cops,DC=specops,DC=com",
+    "name": "Global Admins"
+  },
+  "departments": [
+    {
+      "dn": "OU=Engineering,OU=Justice League,OU=Space Cops,DC=specops,DC=com",
+      "name": "Engineering"
+    },
+    {
+      "dn": "OU=Heroes,OU=Justice League,OU=Space Cops,DC=specops,DC=com",
+      "name": "Heroes"
+    },
+    {
+      "dn": "OU=HR,OU=Justice League,OU=Space Cops,DC=specops,DC=com",
+      "name": "HR"
+    },
+    {
+      "dn": "OU=IT,OU=Justice League,OU=Space Cops,DC=specops,DC=com",
+      "name": "IT"
+    },
+    {
+      "dn": "OU=Legal,OU=Justice League,OU=Space Cops,DC=specops,DC=com",
+      "name": "Legal"
+    },
+    {
+      "dn": "OU=Sales,OU=Justice League,OU=Space Cops,DC=specops,DC=com",
+      "name": "Sales"
+    }
+  ]
+}
