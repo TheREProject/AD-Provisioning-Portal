@@ -1,0 +1,545 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Plumbers AD User Provisioning Tool</title>
+
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f4;
+            margin: 0;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: auto;
+            background: white;
+            padding: 20px;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+        }
+
+        h1 {
+            margin-top: 0;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        input,
+        select {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            box-sizing: border-box;
+        }
+
+        button {
+            padding: 10px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 14px;
+        }
+
+        .primary-btn {
+            background-color: #0078d4;
+            color: white;
+        }
+
+        .danger-btn {
+            background-color: #c62828;
+            color: white;
+        }
+
+        .secondary-btn {
+            background-color: #666;
+            color: white;
+        }
+
+        .button-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+
+        th,
+        td {
+            border: 1px solid #ccc;
+            padding: 10px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #0078d4;
+            color: white;
+        }
+
+        .status {
+            margin-top: 10px;
+            font-weight: bold;
+        }
+
+        .success {
+            color: green;
+        }
+
+        .error {
+            color: red;
+        }
+
+        .group-container {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+
+        .group-checkbox {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .group-checkbox input {
+            width: auto;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <h1>Plumbers AD User Provisioning Tool</h1>
+
+    <div class="form-grid">
+
+        <div>
+            <label>First Name</label>
+            <input type="text" id="firstName">
+        </div>
+
+        <div>
+            <label>Last Name</label>
+            <input type="text" id="lastName">
+        </div>
+
+        <div>
+            <label>Username</label>
+            <input type="text" id="username">
+        </div>
+
+        <div>
+            <label>Email Address</label>
+            <input type="text" id="emailAddress" readonly>
+        </div>
+
+        <div>
+            <label>Display Name</label>
+            <input type="text" id="displayName">
+        </div>
+
+        <div>
+            <label>Department</label>
+            <select id="departmentSelect">
+                <option value="">Loading Departments...</option>
+            </select>
+        </div>
+
+        <div>
+            <label>Generate Temporary Password</label>
+            <button class="secondary-btn" onclick="generatePassword()">
+                Generate Password
+            </button>
+            <div id="passwordStatus" class="status"></div>
+        </div>
+
+    </div>
+
+    <div>
+        <label>Security Groups</label>
+        <div id="groupContainer" class="group-container"></div>
+    </div>
+
+    <div class="button-row">
+        <button class="primary-btn" onclick="addUser()">Add User</button>
+        <button class="secondary-btn" onclick="exportCSV()">Export CSV</button>
+    </div>
+
+    <table id="userTable">
+        <thead>
+            <tr>
+                <th>First Name</th>
+                <th>Last Name</th>
+                <th>Username</th>
+                <th>Department DN</th>
+                <th>Security Groups DN</th>
+                <th>Email Address</th>
+                <th>Display Name</th>
+                <th>Password</th>
+                <th>Actions</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
+</div>
+
+<script>
+
+    let users = [];
+    let currentPassword = "";
+    let editingIndex = -1;
+
+    // ==============================
+    // LOAD JSON DATA
+    // ==============================
+    async function loadData() {
+
+        try {
+            const response = await fetch('JLUad-data.json');
+            const data = await response.json();
+
+            populateDepartments(data.departments || []);
+            populateGroups(data.groups || []);
+
+        } catch (error) {
+            console.error('Failed to load JSON:', error);
+        }
+    }
+
+    // ==============================
+    // POPULATE DEPARTMENTS
+    // ==============================
+    function populateDepartments(departments) {
+
+        const select = document.getElementById('departmentSelect');
+        select.innerHTML = '<option value="">Select Department</option>';
+
+        departments.forEach(dept => {
+            const option = document.createElement('option');
+            option.value = dept.dn;
+            option.textContent = dept.name;
+            select.appendChild(option);
+        });
+    }
+
+    // ==============================
+    // POPULATE GROUPS
+    // ==============================
+    function populateGroups(groups) {
+
+        const container = document.getElementById('groupContainer');
+        container.innerHTML = '';
+
+        groups.forEach(group => {
+
+            const wrapper = document.createElement('div');
+            wrapper.className = 'group-checkbox';
+
+            const checkbox = document.createElement('input');
+            checkbox.type = 'checkbox';
+            checkbox.value = group.dn;
+            checkbox.id = group.name;
+
+            const label = document.createElement('label');
+            label.htmlFor = group.name;
+            label.textContent = group.name;
+
+            wrapper.appendChild(checkbox);
+            wrapper.appendChild(label);
+
+            container.appendChild(wrapper);
+        });
+    }
+
+    // ==============================
+    // PASSWORD GENERATION
+    // ==============================
+    function generatePassword(length = 14) {
+
+        const charset = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnopqrstuvwxyz23456789!@#$%^&*';
+
+        let password = '';
+
+        for (let i = 0; i < length; i++) {
+            password += charset.charAt(Math.floor(Math.random() * charset.length));
+        }
+
+        currentPassword = password;
+
+        document.getElementById('passwordStatus').innerHTML =
+            `<span class="success">Temporary password generated.</span>`;
+    }
+
+    // ==============================
+    // GET SELECTED GROUPS
+    // ==============================
+    function getSelectedGroups() {
+
+        const checkboxes = document.querySelectorAll('#groupContainer input[type="checkbox"]:checked');
+
+        return Array.from(checkboxes)
+            .map(cb => cb.value)
+            .join('|');
+    }
+
+    // ==============================
+    // ADD OR UPDATE USER
+    // ==============================
+    function updateDerivedFields() {
+
+        const firstName = document.getElementById('firstName').value.trim();
+        const lastName = document.getElementById('lastName').value.trim();
+        const username = document.getElementById('username').value.trim();
+
+        const displayName = `${firstName} ${lastName}`.trim();
+        const emailAddress = username
+            ? `${username}@jlu.com`
+            : '';
+
+        document.getElementById('displayName').value = displayName;
+        document.getElementById('emailAddress').value = emailAddress;
+    }
+
+    document.getElementById('firstName').addEventListener('input', updateDerivedFields);
+    document.getElementById('lastName').addEventListener('input', updateDerivedFields);
+    document.getElementById('username').addEventListener('input', updateDerivedFields);
+
+    function addUser() {
+
+        const firstName = document.getElementById('firstName').value.trim();
+        const lastName = document.getElementById('lastName').value.trim();
+        const username = document.getElementById('username').value.trim();
+        const departmentDN = document.getElementById('departmentSelect').value;
+        const securityGroupsDN = getSelectedGroups();
+        const emailAddress = document.getElementById('emailAddress').value.trim();
+        const displayName = document.getElementById('displayName').value.trim();
+
+        if (!firstName || !lastName || !username || !departmentDN) {
+            alert('Please complete all required fields.');
+            return;
+        }
+
+        if (!currentPassword) {
+            generatePassword();
+        }
+
+        const user = {
+            firstName,
+            lastName,
+            username,
+            emailAddress,
+            displayName,
+            departmentDN,
+            securityGroupsDN,
+            password: currentPassword
+        };
+
+        if (editingIndex >= 0) {
+            users[editingIndex] = user;
+            editingIndex = -1;
+        } else {
+            users.push(user);
+        }
+
+        renderTable();
+        clearForm();
+    }
+
+    // ==============================
+    // RENDER TABLE
+    // ==============================
+    function renderTable() {
+
+        const tbody = document.querySelector('#userTable tbody');
+        tbody.innerHTML = '';
+
+        users.forEach((user, index) => {
+
+            const row = document.createElement('tr');
+
+            row.innerHTML = `
+                <td>${user.firstName}</td>
+                <td>${user.lastName}</td>
+                <td>${user.username}</td>
+                <td>${user.departmentDN}</td>
+                <td>${user.securityGroupsDN}</td>
+                <td>${user.emailAddress}</td>
+                <td>${user.displayName}</td>
+                <td>${user.password}</td>
+                <td>
+                    <button class="secondary-btn" onclick="editUser(${index})">Edit</button>
+                    <button class="danger-btn" onclick="removeUser(${index})">Remove</button>
+                </td>
+            `;
+
+            tbody.appendChild(row);
+        });
+    }
+
+    // ==============================
+    // EDIT USER
+    // ==============================
+    function editUser(index) {
+
+        const user = users[index];
+
+        document.getElementById('firstName').value = user.firstName;
+        document.getElementById('lastName').value = user.lastName;
+        document.getElementById('username').value = user.username;
+        document.getElementById('emailAddress').value = user.emailAddress;
+        document.getElementById('displayName').value = user.displayName;
+        document.getElementById('departmentSelect').value = user.departmentDN;
+
+        currentPassword = user.password;
+
+        document.querySelectorAll('#groupContainer input[type="checkbox"]').forEach(cb => {
+            cb.checked = false;
+        });
+
+        const selectedGroups = user.securityGroupsDN.split('|');
+
+        selectedGroups.forEach(groupDN => {
+
+            const checkbox = Array.from(document.querySelectorAll('#groupContainer input[type="checkbox"]'))
+                .find(cb => cb.value === groupDN);
+
+            if (checkbox) {
+                checkbox.checked = true;
+            }
+        });
+
+        editingIndex = index;
+    }
+
+    // ==============================
+    // REMOVE USER
+    // ==============================
+    function removeUser(index) {
+
+        users.splice(index, 1);
+        renderTable();
+    }
+
+    // ==============================
+    // CLEAR FORM
+    // ==============================
+    function clearForm() {
+
+        document.getElementById('firstName').value = '';
+        document.getElementById('lastName').value = '';
+        document.getElementById('username').value = '';
+        document.getElementById('emailAddress').value = '';
+        document.getElementById('displayName').value = '';
+        document.getElementById('departmentSelect').selectedIndex = 0;
+
+        document.querySelectorAll('#groupContainer input[type="checkbox"]').forEach(cb => {
+            cb.checked = false;
+        });
+
+        currentPassword = '';
+
+        document.getElementById('passwordStatus').innerHTML = '';
+    }
+
+    // ==============================
+    // CSV ESCAPING
+    // ==============================
+    function escapeCSV(value) {
+
+        if (value === null || value === undefined) {
+            return '';
+        }
+
+        value = value.toString();
+
+        if (value.includes(',') || value.includes('"') || value.includes('\n')) {
+
+            value = value.replace(/"/g, '""');
+            value = `"${value}"`;
+        }
+
+        return value;
+    }
+
+    // ==============================
+    // EXPORT CSV
+    // ==============================
+    function exportCSV() {
+
+        if (users.length === 0) {
+            alert('No users to export.');
+            return;
+        }
+
+        const headers = [
+            'FirstName',
+            'LastName',
+            'Username',
+            'EmailAddress',
+            'DisplayName',
+            'DepartmentDN',
+            'SecurityGroupsDN',
+            'Password'
+        ];
+
+        const csvRows = users.map(user =>
+            [
+                escapeCSV(user.firstName),
+                escapeCSV(user.lastName),
+                escapeCSV(user.username),
+                escapeCSV(user.emailAddress),
+                escapeCSV(user.displayName),
+                escapeCSV(user.departmentDN),
+                escapeCSV(user.securityGroupsDN),
+                escapeCSV(user.password)
+            ].join(',')
+        );
+
+        const csvContent = [
+            headers.join(','),
+            ...csvRows
+        ].join('\n');
+
+        const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+
+        const link = document.createElement('a');
+        link.href = URL.createObjectURL(blob);
+        link.download = 'users.csv';
+
+        document.body.appendChild(link);
+        link.click();
+        document.body.removeChild(link);
+    }
+
+    // ==============================
+    // INITIALIZE
+    // ==============================
+    loadData();
+
+</script>
+
+</body>
+</html>
+```
