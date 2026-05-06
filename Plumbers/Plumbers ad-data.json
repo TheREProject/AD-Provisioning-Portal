@@ -1,0 +1,130 @@
+{
+  "groups": [
+    {
+      "dn": "CN=Plumbers_HR_Users,OU=HR,OU=Plumbers,OU=Space Cops,DC=specops,DC=com",
+      "name": "Plumbers_HR_Users"
+    },
+    {
+      "dn": "CN=Plumbers_HR_Managers,OU=HR,OU=Plumbers,OU=Space Cops,DC=specops,DC=com",
+      "name": "Plumbers_HR_Managers"
+    },
+    {
+      "dn": "CN=Plumbers_HR_ReadOnly,OU=HR,OU=Plumbers,OU=Space Cops,DC=specops,DC=com",
+      "name": "Plumbers_HR_ReadOnly"
+    },
+    {
+      "dn": "CN=Plumbers_IT_Users,OU=IT,OU=Plumbers,OU=Space Cops,DC=specops,DC=com",
+      "name": "Plumbers_IT_Users"
+    },
+    {
+      "dn": "CN=Plumbers_IT_Managers,OU=IT,OU=Plumbers,OU=Space Cops,DC=specops,DC=com",
+      "name": "Plumbers_IT_Managers"
+    },
+    {
+      "dn": "CN=Plumbers_IT_ReadOnly,OU=IT,OU=Plumbers,OU=Space Cops,DC=specops,DC=com",
+      "name": "Plumbers_IT_ReadOnly"
+    },
+    {
+      "dn": "CN=Plumbers_Sales_Users,OU=Sales,OU=Plumbers,OU=Space Cops,DC=specops,DC=com",
+      "name": "Plumbers_Sales_Users"
+    },
+    {
+      "dn": "CN=Plumbers_Sales_Managers,OU=Sales,OU=Plumbers,OU=Space Cops,DC=specops,DC=com",
+      "name": "Plumbers_Sales_Managers"
+    },
+    {
+      "dn": "CN=Plumbers_Sales_ReadOnly,OU=Sales,OU=Plumbers,OU=Space Cops,DC=specops,DC=com",
+      "name": "Plumbers_Sales_ReadOnly"
+    },
+    {
+      "dn": "CN=Plumbers_Engineering_Users,OU=Engineering,OU=Plumbers,OU=Space Cops,DC=specops,DC=com",
+      "name": "Plumbers_Engineering_Users"
+    },
+    {
+      "dn": "CN=Plumbers_Engineering_Managers,OU=Engineering,OU=Plumbers,OU=Space Cops,DC=specops,DC=com",
+      "name": "Plumbers_Engineering_Managers"
+    },
+    {
+      "dn": "CN=Plumbers_Engineering_ReadOnly,OU=Engineering,OU=Plumbers,OU=Space Cops,DC=specops,DC=com",
+      "name": "Plumbers_Engineering_ReadOnly"
+    },
+    {
+      "dn": "CN=Plumbers_Legal_Users,OU=Legal,OU=Plumbers,OU=Space Cops,DC=specops,DC=com",
+      "name": "Plumbers_Legal_Users"
+    },
+    {
+      "dn": "CN=Plumbers_Legal_Managers,OU=Legal,OU=Plumbers,OU=Space Cops,DC=specops,DC=com",
+      "name": "Plumbers_Legal_Managers"
+    },
+    {
+      "dn": "CN=Plumbers_Legal_ReadOnly,OU=Legal,OU=Plumbers,OU=Space Cops,DC=specops,DC=com",
+      "name": "Plumbers_Legal_ReadOnly"
+    },
+    {
+      "dn": "CN=Magistratus,OU=Field Agents,OU=Plumbers,OU=Space Cops,DC=specops,DC=com",
+      "name": "Magistratus"
+    },
+    {
+      "dn": "CN=Proctors,OU=Field Agents,OU=Plumbers,OU=Space Cops,DC=specops,DC=com",
+      "name": "Proctors"
+    },
+    {
+      "dn": "CN=Magisters,OU=Field Agents,OU=Plumbers,OU=Space Cops,DC=specops,DC=com",
+      "name": "Magisters"
+    },
+    {
+      "dn": "CN=Agents,OU=Field Agents,OU=Plumbers,OU=Space Cops,DC=specops,DC=com",
+      "name": "Agents"
+    },
+    {
+      "dn": "CN=Deputies,OU=Field Agents,OU=Plumbers,OU=Space Cops,DC=specops,DC=com",
+      "name": "Deputies"
+    },
+    {
+      "dn": "CN=Cadets,OU=Field Agents,OU=Plumbers,OU=Space Cops,DC=specops,DC=com",
+      "name": "Cadets"
+    }
+  ],
+  "departments": [
+    {
+      "dn": "OU=Space Cops,DC=specops,DC=com",
+      "name": "Plumbers"
+    },
+    {
+      "dn": "OU=Plumbers,OU=Space Cops,DC=specops,DC=com",
+      "name": "HR"
+    },
+    {
+      "dn": "OU=Plumbers,OU=Space Cops,DC=specops,DC=com",
+      "name": "IT"
+    },
+    {
+      "dn": "OU=Plumbers,OU=Space Cops,DC=specops,DC=com",
+      "name": "Sales"
+    },
+    {
+      "dn": "OU=Plumbers,OU=Space Cops,DC=specops,DC=com",
+      "name": "Engineering"
+    },
+    {
+      "dn": "OU=Plumbers,OU=Space Cops,DC=specops,DC=com",
+      "name": "Legal"
+    },
+    {
+      "dn": "OU=Plumbers,OU=Space Cops,DC=specops,DC=com",
+      "name": "Field Agents"
+    },
+    {
+      "dn": "OU=Field Agents,OU=Plumbers,OU=Space Cops,DC=specops,DC=com",
+      "name": "Earth Plumbers"
+    },
+    {
+      "dn": "OU=Field Agents,OU=Plumbers,OU=Space Cops,DC=specops,DC=com",
+      "name": "Anur Plumbers"
+    },
+    {
+      "dn": "OU=Field Agents,OU=Plumbers,OU=Space Cops,DC=specops,DC=com",
+      "name": "Rooters"
+    }
+  ]
+}
