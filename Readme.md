@@ -72,13 +72,15 @@ Security Groups and Departments loaded from JSON file exported from Active Direc
 
 
 ## **[User data overview]**
-<img width="1326" height="810" alt="image" src="https://github.com/user-attachments/assets/3f337544-f242-44a1-837b-12c23160e718" /><br>
+<img width="1297" height="723" alt="image" src="https://github.com/user-attachments/assets/d114f6a0-d44e-4c49-936f-e798d039d6d1" />
+<br>
 
 
 
 
 ## **[CSV Export]**
-<img width="1625" height="169" alt="image" src="https://github.com/user-attachments/assets/2c794968-ff21-4cdf-aef1-c2bf6b8d63c3" /><br>
+<img width="1597" height="154" alt="image" src="https://github.com/user-attachments/assets/b2fa3c72-3f93-421b-9bbc-f6eea5c09d95" />
+<br>
 
 
 
