@@ -1,8 +1,22 @@
 # ==============================
 # CONFIGURATION
 # ==============================
-$inputFile = "Z:\PShell Scripts\JLU\SecurityGroup txts\Org Groups.txt"
-$logPath   = "Z:\PShell Scripts\JLU\Script Logs\GroupCreation.log"
+$baseOU = "OU=Space Cops,DC=specops,DC=com"  # Base OU where all company OUs reside
+$logPath = "Z:\Logs\group-creation.log"  # Path to store logs
+
+$departments = @(
+    "IT",
+    "HR",
+    "Sales",
+    "Engineering",
+    "Legal"
+)
+
+$groupTemplates = @(
+    "Users",
+    "Managers",
+    "ReadOnly"
+)
 
 # ==============================
 # LOGGING FUNCTION
@@ -21,93 +35,78 @@ function Write-Log {
 }
 
 # ==============================
-# SCRIPT START
+# START
 # ==============================
 Write-Log "========================================"
-Write-Log "Group creation script started"
+Write-Log "Group provisioning script started"
 Write-Log "Running as: $(whoami)"
 
 try {
-    # ==============================
-    # VALIDATE INPUT FILE
-    # ==============================
-    if (-not (Test-Path $inputFile)) {
-        Write-Log "Input file not found: $inputFile" "ERROR"
-        exit
-    }
+    # Get all Company OUs
+    $companies = Get-ADOrganizationalUnit -SearchBase $baseOU -Filter * |
+        Select-Object -ExpandProperty DistinguishedName
 
-    $lines = Get-Content $inputFile | Where-Object { $_.Trim() -ne "" }
+    Write-Log "Found $($companies.Count) company OUs"
 
-    if ($lines.Count -lt 2) {
-        Write-Log "Input file must contain OU + at least one group" "ERROR"
-        exit
-    }
+    foreach ($companyOU in $companies) {
 
-    # ==============================
-    # EXTRACT OU + GROUPS
-    # ==============================
-    $ouPath = $lines[0].Trim()
-    $groupNames = $lines[1..($lines.Count - 1)]
+        # Extract Company Name from DN
+        $companyName = ($companyOU -split ",")[0] -replace "OU=", ""
 
-    Write-Log "Target OU: $ouPath"
-    Write-Log "Groups to create: $($groupNames.Count)"
+        Write-Log "Processing Company: $companyName"
 
-    # ==============================
-    # VALIDATE OU EXISTS
-    # ==============================
-    $ouCheck = Get-ADOrganizationalUnit -Identity $ouPath -ErrorAction SilentlyContinue
+        foreach ($department in $departments) {
 
-    if (-not $ouCheck) {
-        Write-Log "Invalid OU path: $ouPath" "ERROR"
-        exit
-    }
+            # Build Department OU path
+            $departmentOU = "OU=$department,$companyOU"
 
-    Write-Log "OU validation successful"
-
-    # ==============================
-    # CREATE GROUPS
-    # ==============================
-    foreach ($groupName in $groupNames) {
-
-        $groupName = $groupName.Trim()
-
-        if ([string]::IsNullOrWhiteSpace($groupName)) {
-            continue
-        }
-
-        Write-Log "Processing group: $groupName"
-
-        try {
-            # Check if group already exists (domain-wide)
-            $existingGroup = Get-ADGroup -Filter "Name -eq '$groupName'" -ErrorAction SilentlyContinue
-
-            if ($existingGroup) {
-                Write-Log "Group already exists: $groupName" "WARN"
+            try {
+                Get-ADOrganizationalUnit -Identity $departmentOU -ErrorAction Stop | Out-Null
+            }
+            catch {
+                Write-Log "Missing Department OU: $departmentOU" "ERROR"
                 continue
             }
 
-            # Create group
-            New-ADGroup `
-                -Name $groupName `
-                -SamAccountName $groupName `
-                -GroupCategory Security `
-                -GroupScope Global `
-                -Path $ouPath `
-                -Description "Security group for $groupName" `
-                -ErrorAction Stop
+            Write-Log "Processing Department: $department"
 
-            Write-Log "Created group: $groupName"
+            foreach ($template in $groupTemplates) {
 
-        }
-        catch {
-            Write-Log "Failed creating ${groupName} in ${ouPath}: $($_.Exception.Message)" "ERROR"
+                # ==============================
+                # UNIQUE GROUP NAMING STRATEGY
+                # ==============================
+                $groupName = "${companyName}_${department}_${template}"
+
+                # Check if group already exists anywhere in domain
+                $existing = Get-ADGroup -Filter "Name -eq '$groupName'" -ErrorAction SilentlyContinue
+
+                if ($existing) {
+                    Write-Log "Group already exists: $groupName" "WARN"
+                    continue
+                }
+
+                try {
+                    New-ADGroup `
+                        -Name $groupName `
+                        -GroupCategory Security `
+                        -GroupScope Global `
+                        -Path $departmentOU `
+                        -Description "$template group for $department in $companyName" `
+                        -ErrorAction Stop
+
+                    Write-Log "Created group: $groupName in $departmentOU"
+                }
+                catch {
+                    Write-Log "Failed creating $groupName in ${departmentOU}: $($_.Exception.Message)" "ERROR"
+                }
+            }
         }
     }
 
+    Write-Log "Script completed successfully"
 }
 catch {
     Write-Log "FATAL ERROR: $($_.Exception.Message)" "ERROR"
 }
 
-Write-Log "Script completed"
 Write-Log "========================================"
