@@ -1,7 +1,7 @@
 # ==============================
 # CONFIGURATION
 # ==============================
-$baseOU = "OU=Space Cops,DC=specops,DC=com"  # Base OU where all company OUs reside
+$baseOU = "OU=Space Cops,DC=domain,DC=com"  # Base OU where all company OUs reside
 $logPath = "Z:\Logs\group-creation.log"  # Path to store logs
 
 $departments = @(
