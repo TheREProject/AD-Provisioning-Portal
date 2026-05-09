@@ -42,7 +42,7 @@ try {
 }
 
 # Base OU (already exists)
-$baseOU = "OU=Space Cops,DC=specops,DC=com"
+$baseOU = "OU=Space Cops,DC=domain,DC=com"
 
 # Companies and Departments arrays
 $companies = @("Plumbers", "Star Command", "Justice League", "Peach Creek Defenders")
