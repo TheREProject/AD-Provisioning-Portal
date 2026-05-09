@@ -2,7 +2,7 @@
 # CONFIGURATION
 # ==============================
 $inputFile = "Z:\PShell Scripts\JLU\SecurityGroup txts\Org Groups.txt"
-$logPath   = "Z:\PShell Scripts\Plumbers\Script Logs\GroupCreation.log"
+$logPath   = "Z:\PShell Scripts\JLU\Script Logs\GroupCreation.log"
 
 # ==============================
 # LOGGING FUNCTION
